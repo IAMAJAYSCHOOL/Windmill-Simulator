@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b1720">
+  <title>Vayu | Wind Energy Simulator — Indian Knowledge System</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top nav-glass">
+  <div class="container">
+    <a class="navbar-brand fw-bold" href="#sim"><span class="brand-mark">✦</span> VAYU <small>IKS • WIND LAB</small></a>
+    <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#nav"><span class="navbar-toggler-icon"></span></button>
+    <div id="nav" class="collapse navbar-collapse">
+      <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
+        <li><a class="nav-link" href="#sim">Simulator</a></li>
+        <li><a class="nav-link" href="#process">Energy Flow</a></li>
+        <li><a class="nav-link" href="#iks">IKS Context</a></li>
+        <li><a class="nav-link" href="#team">Team</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<main>
+  <section class="hero">
+    <div class="container py-5">
+      <div class="row align-items-end g-4">
+        <div class="col-lg-8">
+          <span class="eyebrow">INDIAN KNOWLEDGE SYSTEM • RENEWABLE ENERGY</span>
+          <h1>From <span>Vayu</span> to<br>useful energy.</h1>
+          <p class="lead">An interactive windmill laboratory that shows how moving air becomes rotational motion and electrical power.</p>
+          <a href="#sim" class="btn btn-primary btn-lg px-4">Open Simulator <span>→</span></a>
+        </div>
+        <div class="col-lg-4">
+          <div class="hero-note">
+            <div class="mono">PROJECT / IKS-WM-01</div>
+            <p>Explore the relationship between wind speed, rotor motion and generated power.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="sim" class="section-pad">
+    <div class="container">
+      <div class="section-heading">
+        <div><span class="eyebrow">01 / SIMULATION</span><h2>Windmill Control Room</h2></div>
+        <p>Change the wind conditions and watch the turbine respond in real time.</p>
+      </div>
+
+      <div class="row g-4">
+        <div class="col-xl-8">
+          <div class="sim-card">
+            <div class="sim-top">
+              <div><span class="live-dot"></span> LIVE SIMULATION</div>
+              <span id="canvasStatus">Rotor spinning</span>
+            </div>
+            <canvas id="windCanvas"></canvas>
+            <div class="canvas-label">
+              <span>VAYU FIELD</span>
+              <strong id="canvasWind">35 km/h</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-xl-4">
+          <div class="control-card">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+              <div><span class="eyebrow">INPUT</span><h3 class="mb-0">Wind conditions</h3></div>
+              <span class="value-pill" id="speedPill">35 km/h</span>
+            </div>
+
+            <label for="windSpeed" class="form-label small text-secondary">Wind speed <span class="float-end mono">0–100 km/h</span></label>
+            <input id="windSpeed" class="form-range" type="range" min="0" max="100" value="35">
+
+            <div class="preset-grid">
+              <button class="preset" data-speed="0">Calm<small>0</small></button>
+              <button class="preset" data-speed="20">Breeze<small>20</small></button>
+              <button class="preset active" data-speed="35">Steady<small>35</small></button>
+              <button class="preset" data-speed="60">Strong<small>60</small></button>
+              <button class="preset" data-speed="100">Gale<small>100</small></button>
+            </div>
+
+            <div class="row g-2 mt-4">
+              <div class="col-6"><button id="brakeBtn" class="control-btn w-100">⏸ Brake</button></div>
+              <div class="col-6"><button id="gustBtn" class="control-btn w-100">≋ Gusts</button></div>
+              <div class="col-6"><button id="autoBtn" class="control-btn w-100">↻ Auto sweep</button></div>
+              <div class="col-6"><button id="resetBtn" class="control-btn w-100">↺ Reset</button></div>
+            </div>
+
+            <div class="divider"></div>
+            <div class="small text-secondary mb-2">Simulation status</div>
+            <div id="statusBox" class="status-box">Low power generation <span>Efficiency 7%</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row g-3 mt-1">
+        <div class="col-md-4"><div class="metric"><span>WIND SPEED</span><strong id="speedMetric">35 km/h</strong><small id="speedMs">9.7 m/s</small></div></div>
+        <div class="col-md-4"><div class="metric"><span>ROTOR SPEED</span><strong id="rpmMetric">12 RPM</strong><small id="revMetric">0.20 rev/sec</small></div></div>
+        <div class="col-md-4"><div class="metric"><span>POWER OUTPUT</span><strong id="powerMetric">113 W</strong><small id="kwMetric">0.11 kW</small></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="process" class="section-pad section-alt">
+    <div class="container">
+      <div class="section-heading">
+        <div><span class="eyebrow">02 / ENERGY FLOW</span><h2>How a windmill works</h2></div>
+        <p>Five simple stages connect atmospheric motion to usable electricity.</p>
+      </div>
+      <div class="row g-3">
+        <div class="col-md-6 col-lg">
+          <div class="process-card"><b>01</b><div class="process-icon">≈</div><h4>Wind</h4><p>Moving air carries kinetic energy.</p></div>
+        </div>
+        <div class="col-md-6 col-lg">
+          <div class="process-card"><b>02</b><div class="process-icon">↻</div><h4>Blades</h4><p>Aerodynamic forces turn the rotor.</p></div>
+        </div>
+        <div class="col-md-6 col-lg">
+          <div class="process-card"><b>03</b><div class="process-icon">⚙</div><h4>Shaft</h4><p>Rotational torque is transferred inward.</p></div>
+        </div>
+        <div class="col-md-6 col-lg">
+          <div class="process-card"><b>04</b><div class="process-icon">ϟ</div><h4>Generator</h4><p>Mechanical motion is converted to electricity.</p></div>
+        </div>
+        <div class="col-md-6 col-lg">
+          <div class="process-card"><b>05</b><div class="process-icon">⌁</div><h4>Power</h4><p>Electrical energy can be supplied to loads.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="iks" class="section-pad">
+    <div class="container">
+      <div class="iks-panel">
+        <div class="row g-5 align-items-center">
+          <div class="col-lg-5">
+            <span class="eyebrow">03 / INDIAN KNOWLEDGE SYSTEM</span>
+            <h2>Learning from nature, designing for tomorrow.</h2>
+          </div>
+          <div class="col-lg-7">
+            <p class="iks-lead">This project connects a modern renewable-energy model with the broader IKS idea of observing natural processes and applying knowledge to human needs.</p>
+            <div class="row g-3">
+              <div class="col-sm-4"><div class="iks-point"><strong>Observation</strong><span>Study wind as a natural resource.</span></div></div>
+              <div class="col-sm-4"><div class="iks-point"><strong>Application</strong><span>Convert natural motion into useful work.</span></div></div>
+              <div class="col-sm-4"><div class="iks-point"><strong>Sustainability</strong><span>Use renewable energy with lower emissions.</span></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-pad formula-section">
+    <div class="container">
+      <div class="formula-box">
+        <div>
+          <span class="eyebrow">SIMULATION MODEL</span>
+          <h2>Power rises rapidly with wind speed.</h2>
+          <p>The simulator uses a simplified educational model rather than a real turbine's full aerodynamic and electrical model.</p>
+        </div>
+        <div class="formula">P ∝ v³</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="team" class="section-pad section-alt">
+    <div class="container">
+      <div class="section-heading">
+        <div><span class="eyebrow">04 / PROJECT TEAM</span><h2>Built by students</h2></div>
+        <p>Indian Knowledge System — Windmill Simulation Project</p>
+      </div>
+      <div class="row g-2">
+        <div class="col-6 col-md-4 col-lg-3"><div class="member">Ajay Maurya</div></div>
+        <div class="col-6 col-md-4 col-lg-3"><div class="member">Shubham Lawate</div></div>
+        <div class="col-6 col-md-4 col-lg-3"><div class="member">Karan Rana</div></div>
+        <div class="col-6 col-md-4 col-lg-3"><div class="member">Rashad Qureshi</div></div>
+        <div class="col-6 col-md-4 col-lg-3"><div class="member">Bhupati Nadar</div></div>
+        <div class="col-6 col-md-4 col-lg-3"><div class="member">Vaibhav Singh</div></div>
+        <div class="col-6 col-md-4 col-lg-3"><div class="member">Ved Thakur</div></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="container d-flex flex-column flex-md-row justify-content-between gap-2">
+    <span>VAYU — Wind Energy Simulator</span>
+    <span>Indian Knowledge System • Academic Prototype</span>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
