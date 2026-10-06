@@ -20,6 +20,8 @@ const resetBtn = document.getElementById("resetBtn");
 
 let wind = 35, brake = false, gusts = false, auto = false;
 let rotorAngle = 0, last = performance.now(), autoTime = 0;
+let cloudOffset = 0;
+let lastUIUpdate = 0;
 let particles = Array.from({length: 34}, () => ({
   x: Math.random(), y: .18 + Math.random() * .58,
   len: .012 + Math.random() * .025, phase: Math.random() * 10
@@ -40,8 +42,17 @@ function powerFor(v) {
   return Math.round(1600 * Math.pow((v - 5) / 95, 2.3));
 }
 
+function effectiveWind() {
+  if (brake) return 0;
+  if (!gusts) return wind;
+
+  // Smooth temporary wind-speed changes around the selected speed.
+  const gust = 1 + Math.sin(performance.now() / 420) * 0.25;
+  return Math.max(0, Math.min(100, Math.round(wind * gust)));
+}
+
 function values() {
-  const v = brake ? 0 : wind;
+  const v = effectiveWind();
   const rpm = v === 0 ? 0 : Math.round(v / 100 * 28 + 2);
   const power = powerFor(v);
   return {v, rpm, power};
@@ -93,6 +104,12 @@ function draw(t) {
   const w = canvas.clientWidth, h = canvas.clientHeight;
   const {v, rpm} = values();
 
+  // Refresh displayed RPM/power while gusts are changing the effective wind.
+  if (now - lastUIUpdate > 100) {
+    updateUI();
+    lastUIUpdate = now;
+  }
+
   const sky = ctx.createLinearGradient(0, 0, 0, h);
   sky.addColorStop(0, "#08141e");
   sky.addColorStop(.58, "#102a35");
@@ -111,10 +128,15 @@ function draw(t) {
   ctx.fillStyle = "#f0bd67";
   ctx.beginPath(); ctx.arc(gx, gy, 18, 0, Math.PI * 2); ctx.fill();
 
-  // clouds
+  // clouds move with the wind
+  cloudOffset += (v / 100) * 0.012 * dt * (gusts ? 1.35 : 1);
+  cloudOffset %= 1.35;
+
   ctx.fillStyle = "rgba(220,240,238,.10)";
   [[.12,.2,1],[.36,.13,.75],[.62,.24,.9]].forEach(([x,y,s]) => {
-    const X=w*x,Y=h*y;
+    let X = ((x + cloudOffset) % 1.35) * w;
+    if (X < -80) X += w + 80;
+    const Y = h * y;
     ctx.beginPath();
     ctx.arc(X,Y,28*s,0,Math.PI*2);
     ctx.arc(X+25*s,Y-10*s,22*s,0,Math.PI*2);
