@@ -109,6 +109,34 @@ Folder: / (root)
 
 GitHub will provide the published website URL.
 
+
+## DevOps Pipeline
+
+This project uses Git and GitHub for version control, GitHub Actions
+for automated testing and deployment, and Docker to run the website
+in an Nginx container.
+
+### Run with Docker
+
+```bash
+docker build -t windmill-simulator .
+docker run -d --name windmill-app -p 8080:80 windmill-simulator
+```
+
+Open http://localhost:8080 in your browser.
+
+### Run Tests
+
+```bash
+python -m unittest discover -s tests -v
+```
+
+### CI/CD
+
+The GitHub Actions workflow runs automated tests, builds the Docker
+image, and deploys the static website to GitHub Pages.
+
+
 ## 👥 Project Team
 
 * **Ajay Maurya**
